@@ -7,13 +7,6 @@ import (
 type userBackend struct {
 }
 
-func (b userBackend) Authenticate(username, password string) (backends.UserData, backends.Error) {
-	u := new(backends.UserData)
-	u.Username = "jr"
-	
-	return *u, nil
-}
-
 func init() {
 	/*
 	// connection
@@ -37,4 +30,11 @@ func init() {
 		Address:        bAddr,
 		AddressMailing: bAddrMailing,*/
 	})
+}
+
+func (b userBackend) Authenticate(username, password string) (backends.UserData, backends.Error) {
+	u := new(backends.UserData)
+	u.Username = username
+	
+	return *u, nil
 }

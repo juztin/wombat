@@ -1,6 +1,8 @@
 package user
 
 import (
+	"net/http"
+
 	"bitbucket.org/juztin/virginia/backends"
 	"bitbucket.org/juztin/virginia/config"
 )
@@ -29,4 +31,13 @@ func Anonymous() User {
 func Authenticate(username, password string) User {
 	m, _ := b.Authenticate(username, password)
 	return User{ m.Username, true }
+}
+
+func FromCookie(r *http.Request) User {
+	c, err := r.Cookie(config.Cookie)
+	if err != nil {
+		return Anonymous()
+	}
+
+	return User{ c.Value, true }
 }
