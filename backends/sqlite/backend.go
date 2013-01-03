@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"bitbucket.org/juztin/virginia/backends"
+	"bitbucket.org/juztin/wombat/backends"
 )
 
 type userBackend struct {

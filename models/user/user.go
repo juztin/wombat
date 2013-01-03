@@ -3,8 +3,8 @@ package user
 import (
 	"net/http"
 
-	"bitbucket.org/juztin/virginia/backends"
-	"bitbucket.org/juztin/virginia/config"
+	"bitbucket.org/juztin/wombat/backends"
+	"bitbucket.org/juztin/wombat/config"
 )
 
 var b backends.User

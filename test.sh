@@ -1,6 +1,6 @@
 #!/bin/sh -
 
-go test bitbucket.org/juztin/virginia
-go test bitbucket.org/juztin/virginia/backends
-go test bitbucket.org/juztin/virginia/config
-go test bitbucket.org/juztin/virginia/models
+go test bitbucket.org/juztin/wombat
+go test bitbucket.org/juztin/wombat/backends
+go test bitbucket.org/juztin/wombat/config
+go test bitbucket.org/juztin/wombat/models

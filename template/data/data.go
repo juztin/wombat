@@ -3,9 +3,9 @@ package data
 import (
 	//"bitbucket.org/juztin/dingo"
 
-	"bitbucket.org/juztin/virginia"
-	"bitbucket.org/juztin/virginia/config"
-	"bitbucket.org/juztin/virginia/models/user"
+	"bitbucket.org/juztin/wombat"
+	"bitbucket.org/juztin/wombat/config"
+	"bitbucket.org/juztin/wombat/models/user"
 )
 
 type Data struct {
@@ -18,7 +18,7 @@ type Data struct {
 var anonymousUser = user.Anonymous()
 
 //func New(ctx dingo.Context) Data {
-func New(ctx virginia.Context) Data {
+func New(ctx wombat.Context) Data {
 	t := new(Data)
 	t.IsProd = config.IsProd
 	t.MediaURL = config.MediaURL
