@@ -2,9 +2,15 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 )
+
+const CONFIG_FILE = "config.json"
 
 var (
 	CryptIter   = 12
@@ -20,8 +26,8 @@ var (
 	SockFile    = "/tmp/juztin.sock"
 	MediaURL    = "media.juzt.in/"
 	TmplEditRt  = "^/_dt/$"
+	TmplEditErr = false
 	TmplPath    = "./templates"
-	TmplErrPath = "/errors/"
 
 	Backend     = "sqlite"
 	MongoHost   = "localhost"
@@ -59,21 +65,50 @@ func setFromCfg() {
 	setCfgString("sockFile", &SockFile)
 	setCfgString("mediaUrl", &MediaURL)
 	setCfgString("templateEditRoute", &TmplEditRt)
+	setCfgBool("templateEditErr", &TmplEditErr)
+	setCfgString("templatePath", &TmplPath)
+
 	setCfgString("backend", &Backend)
 	setCfgString("mongoHost", &MongoHost)
 	setCfgString("sqliteFile", &SqliteFile)
 }
 
-func Load(f string) {
-	// read configuration from file
-	c, err := ioutil.ReadFile(f)
+func getConfig() (p string, c []byte, e error) {
+	p = filepath.Dir(os.Args[0])
+	f := filepath.Join(p, CONFIG_FILE)
+
+	// if a config file exists within the executables path
+	if _, err := os.Stat(f); err == nil {
+		c, e = ioutil.ReadFile(f)
+		return
+	}
+
+	// if a config file exists within the current working dir
+	if p, e = os.Getwd(); e == nil {
+		f = filepath.Join(p, CONFIG_FILE)
+		if _, e = os.Stat(f); e == nil {
+			c, e = ioutil.ReadFile(f)
+			return
+		}
+	}
+
+	// no configuration was found
+	p = ""
+	e = errors.New(fmt.Sprintf("Failed to find a configuration file: %s", CONFIG_FILE))
+
+	return
+}
+
+func Load() {
+	// get|read configuration from file
+	p, c, err := getConfig()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to load configuration from: %s\n%v", f, err))
+		log.Fatalf("Failed to load configuration file: %s, from: %s\n%v", CONFIG_FILE, p, err)
 	}
 
 	var j interface{}
 	if err := json.Unmarshal(c, &j); err != nil {
-		panic(fmt.Sprintf("Failed to read configuration file: %s\n%v", f, err))
+		log.Fatalf("Failed to read configuration file: %s, from: %s\n%v", CONFIG_FILE, p, err)
 	}
 
 	cfg = j.(map[string]interface{})

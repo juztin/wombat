@@ -2,9 +2,13 @@ package wombat
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
+	"path/filepath"
+	"strconv"
+	//"sort"
 
 	"bitbucket.org/juztin/dingo"
 	"bitbucket.org/juztin/dingo/views"
@@ -17,7 +21,10 @@ import (
 /*-----------------------------------Fields------------------------------------*/
 const (
 	VERSION string = "0.0.1"
+	ERR_TMPL string = "/errors/"
 )
+
+//var httpCodes = []int64{401, 404, 500, 501}
 
 type Server struct {
 	*dingo.Server
@@ -39,6 +46,52 @@ func dingoHandler() (net.Listener, error) {
 
 func canEdit(ctx dingo.Context) bool {
 	return user.FromCookie(ctx.Request).IsAdmin
+}
+
+func addErrViews(path string) {
+	files, err := ioutil.ReadDir(filepath.Join(path, ERR_TMPL))
+	if err != nil {
+		log.Printf("Failed to load error templates: %v\n", err)
+		return
+	}
+
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+
+		name := f.Name()
+		bName := name[:len(name)-len(filepath.Ext(name))]
+		// Add all error templates where the base filename exists within `httpCodes`
+		if x, err := strconv.ParseInt(bName, 10, 16); err == nil {
+			/*i := sort.Search(len(httpCodes), func(i int) bool { return httpCodes[i] >= x })
+			if i < len(httpCodes) && httpCodes[i] == x {
+				// x is present within httpCodes[i]
+				views.New(fmt.Sprintf("%s%s", ERR_TMPL, name))
+			} else {
+				// x is NOT present within httpCodes[i]
+				log.Println("Invalid error template found: ", name)
+			}*/
+			if x > 99 && x < 600 {
+				t := fmt.Sprintf("%s%s", ERR_TMPL, name)
+				views.New(t)
+				if config.TmplEditErr {
+					views.AddEditableView(t)
+				}
+			} else {
+				log.Println("Invalid error template found: ", name)
+			}
+		}
+	}
+}
+
+func Error(ctx dingo.Context, status int) bool {
+	n := fmt.Sprintf("%s%d.html", ERR_TMPL, status)
+	if v := views.Get(n); v != nil {
+		v.Execute(ctx, nil)
+		return true
+	}
+	return false
 }
 
 func Wrap(fn Handler) func(ctx dingo.Context) {
@@ -98,18 +151,10 @@ func (s *Server) ReRouter(p string) dingo.Router {
 }*/
 /*----------------------------------------------------------------------------*/
 
-func Error(ctx dingo.Context, status int) bool {
-	//n := fmt.Sprintf("%d.html", status)
-	n := fmt.Sprintf("%s%d.html", config.TmplErrPath, status)
-	if v := views.Get(n); v != nil {
-		v.Execute(ctx, nil)
-		return true
-	}
-	return false
-}
-
-//func New() dingo.Server {
 func New() Server {
+	// load config
+	config.Load()
+
 	// update empty template
 	views.EmptyTmpl = template.Empty
 
@@ -119,6 +164,9 @@ func New() Server {
 	// editable view media
 	views.CodeMirrorJS = "//" + config.MediaURL + "js/vendor/codemirror.js"
 	views.CodeMirrorCSS = "//" + config.MediaURL + "css/codemirror.css"
+
+	// add all XXX.html, http status-code, templates
+	addErrViews(config.TmplPath)
 
 	// create the handler
 	h, e := dingoHandler()
@@ -134,6 +182,5 @@ func New() Server {
 	dingo.ErrorHandler = Error
 
 	// return the server so that routes can be added
-	//return s
 	return Server{&s}
 }
