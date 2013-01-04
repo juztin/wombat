@@ -45,7 +45,7 @@ func dingoHandler() (net.Listener, error) {
 }
 
 func canEdit(ctx dingo.Context) bool {
-	return user.FromCookie(ctx.Request).IsAdmin
+	return user.FromCookie(ctx.Request).IsAdmin()
 }
 
 func addErrViews(path string) {
