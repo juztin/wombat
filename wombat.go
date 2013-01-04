@@ -128,7 +128,8 @@ func iroute(route newRoute) dingo.NewIRoute {
 			return route(path, Handler(h.(func(Context))))
 		}
 
-		panic(fmt.Sprintf("Handler is invalid: %v", h))
+		log.Fatal("Handler is invalid: ", h)
+		return nil
 	}
 	return fn
 }

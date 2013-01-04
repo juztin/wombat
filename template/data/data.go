@@ -1,8 +1,6 @@
 package data
 
 import (
-	//"bitbucket.org/juztin/dingo"
-
 	"bitbucket.org/juztin/wombat"
 	"bitbucket.org/juztin/wombat/config"
 	"bitbucket.org/juztin/wombat/models/user"

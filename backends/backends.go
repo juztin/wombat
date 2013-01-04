@@ -2,16 +2,14 @@ package backends
 
 import (
 	"fmt"
+	"log"
 )
 
 var backends = make(map[string]Backend)
 
 func Register(name string, backend Backend) {
-	/*if backend == nil {
-		panic("backends: Register backend is nil")
-	}*/
 	if _, dup := backends[name]; dup {
-		panic("backends: Register called twice for driver " + name)
+		log.Fatal("backends: Register called twice for driver ", name)
 	}
 	backends[name] = backend
 }

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"net/http"
 
 	"bitbucket.org/juztin/wombat/backends"
@@ -27,7 +28,7 @@ func (u user) IsAdmin() bool {
 
 func init() {
 	if backend, err := backends.Open(config.Backend); err != nil {
-		panic("Failed to get backend")
+		log.Fatal("Failed to get backend")
 	} else {
 		b = backend.User
 	}
