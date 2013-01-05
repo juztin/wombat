@@ -13,8 +13,8 @@ import (
 	"bitbucket.org/juztin/dingo"
 	"bitbucket.org/juztin/dingo/views"
 
-	"bitbucket.org/juztin/wombat/config"
 	"bitbucket.org/juztin/wombat/models/user"
+	"bitbucket.org/juztin/wombat/config"
 	"bitbucket.org/juztin/wombat/template"
 )
 
@@ -28,6 +28,7 @@ const (
 
 type Server struct {
 	*dingo.Server
+	Wrapper Wrapper
 }
 
 type Context struct {
@@ -36,6 +37,8 @@ type Context struct {
 }
 
 type Handler func(ctx Context)
+
+type Wrapper func(fn Handler) func(ctx dingo.Context)
 
 func dingoHandler() (net.Listener, error) {
 	if !config.UnixSocket {
@@ -104,19 +107,7 @@ func Wrap(fn Handler) func(ctx dingo.Context) {
 	}
 }
 
-/*-----------------------------------Server-----------------------------------*/
-func (s *Server) SRoute(path string, handler Handler, methods ...string) {
-	s.Server.SRoute(path, Wrap(handler), methods...)
-}
-func (s Server) ReRoute(path string, handler Handler, methods ...string) {
-	s.Server.ReRoute(path, Wrap(handler), methods...)
-}
-// TODO - need to create the wrapping here (since reflection is used to pass the context)
-/*func (s *Server) RRoute(path string, handler interface{}, methods ...string) {
-	fn = func(ctx dingo.Context) {
-	}
-}*/
-
+/*-----------------------------------Routes-----------------------------------*/
 type newRoute func(path string, h Handler) dingo.Route
 func iroute(route newRoute) dingo.NewIRoute {
 	var fn dingo.NewIRoute
@@ -141,6 +132,19 @@ func NewReRoute(re string, handler Handler) dingo.Route {
 	return dingo.NewReRoute(re, Wrap(handler))
 }
 
+/*-----------------------------------Server-----------------------------------*/
+func (s *Server) SRoute(path string, handler Handler, methods ...string) {
+	s.Server.SRoute(path, Wrap(handler), methods...)
+}
+func (s Server) ReRoute(path string, handler Handler, methods ...string) {
+	s.Server.ReRoute(path, Wrap(handler), methods...)
+}
+// TODO - need to create the wrapping here (since reflection is used to pass the context)
+/*func (s *Server) RRoute(path string, handler interface{}, methods ...string) {
+	fn = func(ctx dingo.Context) {
+	}
+}*/
+
 func (s *Server) SRouter(p string) dingo.Router {
 	return dingo.NewRouter(s.Server, p, iroute(NewSRoute))
 }
@@ -150,11 +154,21 @@ func (s *Server) ReRouter(p string) dingo.Router {
 /*func (s *Server) RRouter(p string) Router {
 	return Router{s, p, NewRRoute}
 }*/
+
+func (s *Server) Serve() {
+	if config.UnixSocket {
+		log.Println("Wombat - listening on", config.SockFile)
+	} else {
+		log.Printf("Wombat - listening on %s:%d\n", config.Host, config.Port)
+	}
+
+	s.Server.Serve()
+}
 /*----------------------------------------------------------------------------*/
 
 func New() Server {
 	// load config
-	config.Load()
+	//config.Load()
 
 	// update empty template
 	views.EmptyTmpl = template.Empty
@@ -183,5 +197,5 @@ func New() Server {
 	dingo.ErrorHandler = Error
 
 	// return the server so that routes can be added
-	return Server{&s}
+	return Server{&s, Wrap}
 }

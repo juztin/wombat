@@ -38,3 +38,16 @@ func (b userBackend) Authenticate(username, password string) (backends.UserData,
 	
 	return *u, nil
 }
+
+func (b userBackend) FromCache(key string) (backends.UserData, backends.Error) {
+	u := new(backends.UserData)
+	u.Username = "Juztin"
+	u.Firstname = "Justin"
+	u.Lastname = "Wilson"
+	u.Email = "justinwilson1@gmail.com"
+	u.Password = "@Q#$Q@#$ADFJASF"
+	u.Role = 666
+	u.Status = 1
+
+	return *u, nil
+}

@@ -99,7 +99,8 @@ func getConfig() (p string, c []byte, e error) {
 	return
 }
 
-func Load() {
+//func Load() {
+func init() {
 	// get|read configuration from file
 	p, c, err := getConfig()
 	if err != nil {
