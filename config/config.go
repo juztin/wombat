@@ -30,7 +30,8 @@ var (
 	TmplPath    = "./templates"
 
 	Backend     = "sqlite"
-	MongoHost   = "localhost"
+	MongoURL    = "localhost"
+	MongoDB     = "wombat"
 	SqliteFile  = "./db.sqlite"
 
 	cfg map[string]interface{}
@@ -69,7 +70,8 @@ func setFromCfg() {
 	setCfgString("templatePath", &TmplPath)
 
 	setCfgString("backend", &Backend)
-	setCfgString("mongoHost", &MongoHost)
+	setCfgString("mongoURL", &MongoURL)
+	setCfgString("mongoDB", &MongoDB)
 	setCfgString("sqliteFile", &SqliteFile)
 }
 

@@ -1,8 +1,9 @@
 package backends
 
 type User interface {
-	Authenticate(username, password string) (UserData, Error)
-	FromCache(key string) (UserData, Error)
+	GetByUsername(username string) (UserData, Error)
+	GetBySession(session string) (UserData, Error)
+	SetSession(username, key string) Error
 }
 
 type UserData struct {
@@ -11,6 +12,7 @@ type UserData struct {
 	Lastname  string
 	Email     string
 	Password  string
+	Session   string
 	Role      int
 	Status    int
 }

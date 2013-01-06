@@ -32,14 +32,14 @@ func init() {
 	})
 }
 
-func (b userBackend) Authenticate(username, password string) (backends.UserData, backends.Error) {
+func (b userBackend) GetByUsername(username string) (backends.UserData, backends.Error) {
 	u := new(backends.UserData)
 	u.Username = username
 	
 	return *u, nil
 }
 
-func (b userBackend) FromCache(key string) (backends.UserData, backends.Error) {
+func (b userBackend) GetBySession(session string) (backends.UserData, backends.Error) {
 	u := new(backends.UserData)
 	u.Username = "Juztin"
 	u.Firstname = "Justin"
@@ -50,4 +50,8 @@ func (b userBackend) FromCache(key string) (backends.UserData, backends.Error) {
 	u.Status = 1
 
 	return *u, nil
+}
+
+func (b userBackend) SetSession(username, key string) backends.Error {
+	return nil
 }

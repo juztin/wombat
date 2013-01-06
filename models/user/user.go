@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"code.google.com/p/go.crypto/bcrypt"
+
 	"bitbucket.org/juztin/wombat/backends"
 	"bitbucket.org/juztin/wombat/config"
 )
@@ -30,6 +32,16 @@ type user struct {
 	role      int
 	status    int
 }
+
+func init() {
+	if backend, err := backends.Open(config.Backend); err != nil {
+		log.Fatal("Failed to get backend")
+	} else {
+		b = backend.User
+	}
+}
+
+/*---------------- user ----------------*/
 func (u user) Username() string {
 	return u.username
 }
@@ -51,13 +63,10 @@ func (u user) Role() int {
 func (u user) Status() int {
 	return u.status
 }
+/*--------------------------------------*/
 
-func init() {
-	if backend, err := backends.Open(config.Backend); err != nil {
-		log.Fatal("Failed to get backend")
-	} else {
-		b = backend.User
-	}
+func hashit(v string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(v), config.CryptIter)
 }
 
 func userFromData(m backends.UserData) user {
@@ -67,7 +76,7 @@ func userFromData(m backends.UserData) user {
 	u.lastname = m.Lastname
 	u.email = m.Email
 	u.password = m.Password
-	u.isAdmin = m.Role == 666
+	u.isAdmin = (m.Role & 1) == 1
 	u.role = m.Role
 	u.status = m.Status
 	return *u
@@ -81,10 +90,19 @@ func Anonymous() User {
 }
 
 func Authenticate(username, password string) (User, bool) {
-	if m, err := b.Authenticate(username, password); err == nil {
-		return userFromData(m), true
+	m, err := b.GetByUsername(username)
+	if err != nil {
+		log.Printf("Failed to get user: ", username, " : ", err)
+		return Anonymous(), false
 	}
-	return nil, false
+
+	p1, p2 := []byte(m.Password), []byte(password)
+	if err := bcrypt.CompareHashAndPassword(p1, p2); err != nil {
+		log.Printf("Failed to compare password hashes: ",  err)
+		return Anonymous(), false
+	}
+
+	return userFromData(m), true
 }
 
 func FromCookie(r *http.Request) User {
@@ -93,11 +111,19 @@ func FromCookie(r *http.Request) User {
 		return Anonymous()
 	}
 
-	m, err := b.FromCache(c.Value)
+	m, err := b.GetBySession(c.Value)
 	if err != nil {
-		log.Println("Failed to get user from cache: ", err)
-		return nil
+		log.Printf("Failed to get user from cache:%v\n", err)
+		return Anonymous()
 	}
 
 	return userFromData(m)
+}
+
+func SetSession(u User, s string) bool {
+	if err := b.SetSession(u.Username(), s); err != nil {
+		log.Printf("Failed to set session for: ", u.Username(), " : ", err)
+		return false
+	}
+	return true
 }
