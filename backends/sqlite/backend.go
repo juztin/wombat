@@ -9,20 +9,20 @@ type userBackend struct {
 
 func init() {
 	/*
-	// connection
-	conn := newConn()
+		// connection
+		conn := newConn()
 
-	// user
-	bUser := userBackend{newBackend(conn, userStmts)}
+		// user
+		bUser := userBackend{newBackend(conn, userStmts)}
 
-	// address
-	bAddr := addrBackend{newBackend(conn, addrStmts), updateAddrStmt}
+		// address
+		bAddr := addrBackend{newBackend(conn, addrStmts), updateAddrStmt}
 
-	// addressMailing
-	b := addrBackend{newBackend(conn, addrMailingStmts), updateAddrMailingStmt}
-	bAddrMailing := addrMailingBackend{b}
+		// addressMailing
+		b := addrBackend{newBackend(conn, addrMailingStmts), updateAddrMailingStmt}
+		bAddrMailing := addrMailingBackend{b}
 
-	// register
+		// register
 	*/
 	backends.Register("sqlite", backends.Backend{
 		User: userBackend{},
@@ -35,7 +35,7 @@ func init() {
 func (b userBackend) GetByUsername(username string) (backends.UserData, backends.Error) {
 	u := new(backends.UserData)
 	u.Username = username
-	
+
 	return *u, nil
 }
 

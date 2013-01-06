@@ -2,7 +2,6 @@ package user
 
 import (
 	"log"
-	"net/http"
 
 	"code.google.com/p/go.crypto/bcrypt"
 
@@ -13,24 +12,26 @@ import (
 var b backends.User
 
 type User interface {
-	Username()  string
+	Username() string
 	Firstname() string
-	Lastname()  string
-	Email()     string
-	IsAdmin()   bool
-	Role()      int
-	Status()    int
+	Lastname() string
+	Email() string
+	IsAdmin() bool
+	IsAnonymous() bool
+	Role() int
+	Status() int
 }
 
 type user struct {
-	username  string
-	firstname string
-	lastname  string
-	email     string
-	password  string
-	isAdmin   bool
-	role      int
-	status    int
+	username    string
+	firstname   string
+	lastname    string
+	email       string
+	password    string
+	isAdmin     bool
+	isAnonymous bool
+	role        int
+	status      int
 }
 
 func init() {
@@ -57,12 +58,16 @@ func (u user) Email() string {
 func (u user) IsAdmin() bool {
 	return u.isAdmin
 }
+func (u user) IsAnonymous() bool {
+	return u.isAnonymous
+}
 func (u user) Role() int {
 	return u.role
 }
 func (u user) Status() int {
 	return u.status
 }
+
 /*--------------------------------------*/
 
 func hashit(v string) ([]byte, error) {
@@ -77,6 +82,7 @@ func userFromData(m backends.UserData) user {
 	u.email = m.Email
 	u.password = m.Password
 	u.isAdmin = (m.Role & 1) == 1
+	u.isAnonymous = false
 	u.role = m.Role
 	u.status = m.Status
 	return *u
@@ -86,6 +92,7 @@ func Anonymous() User {
 	u := new(user)
 	u.username = "anonymous"
 	u.isAdmin = false
+	u.isAnonymous = true
 	return u
 }
 
@@ -98,20 +105,19 @@ func Authenticate(username, password string) (User, bool) {
 
 	p1, p2 := []byte(m.Password), []byte(password)
 	if err := bcrypt.CompareHashAndPassword(p1, p2); err != nil {
-		log.Printf("Failed to compare password hashes: ",  err)
+		log.Printf("Failed to compare password hashes: ", err)
 		return Anonymous(), false
 	}
 
 	return userFromData(m), true
 }
 
-func FromCookie(r *http.Request) User {
-	c, err := r.Cookie(config.Cookie)
-	if err != nil {
+func FromSession(key string) User {
+	if key == "" {
 		return Anonymous()
 	}
 
-	m, err := b.GetBySession(c.Value)
+	m, err := b.GetBySession(key)
 	if err != nil {
 		log.Printf("Failed to get user from cache:%v\n", err)
 		return Anonymous()

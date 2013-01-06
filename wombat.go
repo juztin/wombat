@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -13,15 +14,19 @@ import (
 	"bitbucket.org/juztin/dingo"
 	"bitbucket.org/juztin/dingo/views"
 
-	"bitbucket.org/juztin/wombat/models/user"
 	"bitbucket.org/juztin/wombat/config"
+	"bitbucket.org/juztin/wombat/models/user"
 	"bitbucket.org/juztin/wombat/template"
 )
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION string = "0.0.1"
+	VERSION  string = "0.0.1"
 	ERR_TMPL string = "/errors/"
+)
+
+var (
+	Wrap Wrapper = wrap
 )
 
 //var httpCodes = []int64{401, 404, 500, 501}
@@ -40,15 +45,25 @@ type Handler func(ctx Context)
 
 type Wrapper func(fn Handler) func(ctx dingo.Context)
 
+func SetWrapper(fn Wrapper) {
+	Wrap = fn
+}
+
 func dingoHandler() (net.Listener, error) {
-	if !config.UnixSocket {
-		return dingo.HttpHandler(config.Host, config.Port)
+	if !config.UnixSock {
+		return dingo.HttpHandler(config.ServerHost, config.ServerPort)
 	}
-	return dingo.SOCKHandler(config.SockFile, os.ModePerm)
+	return dingo.SOCKHandler(config.UnixSockFile, os.ModePerm)
 }
 
 func canEdit(ctx dingo.Context) bool {
-	return user.FromCookie(ctx.Request).IsAdmin()
+	//return user.FromCookie(ctx.Request).IsAdmin()
+	return getUser(ctx).IsAdmin()
+}
+
+func canEditExpire(ctx dingo.Context) bool {
+	//return user.FromCookie(ctx.Request).IsAdmin()
+	return getExpireUser(ctx).IsAdmin()
 }
 
 func addErrViews(path string) {
@@ -88,6 +103,45 @@ func addErrViews(path string) {
 	}
 }
 
+func getUser(ctx dingo.Context) user.User {
+	return user.FromSession(GetCookieSession(ctx.Request))
+}
+
+func getExpireUser(ctx dingo.Context) user.User {
+	if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
+		http.SetCookie(ctx.Writer, cookie)
+		return user.FromSession(key)
+	}
+	return user.Anonymous()
+}
+
+func wrap(fn Handler) func(ctx dingo.Context) {
+	return func(ctx dingo.Context) {
+		c := new(Context)
+		c.Context = ctx
+		//c.User = user.FromSession(GetCookieSession(ctx.Request))
+		c.User = getUser(ctx)
+
+		fn(*c)
+	}
+}
+
+func wrapExpires(fn Handler) func(ctx dingo.Context) {
+	return func(ctx dingo.Context) {
+		c := new(Context)
+		c.Context = ctx
+		c.User = getExpireUser(ctx)
+		/*if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
+			c.User = user.FromSession(key)
+			http.SetCookie(ctx.Writer, cookie)
+		} else {
+			c.User = user.Anonymous()
+		}*/
+
+		fn(*c)
+	}
+}
+
 func Error(ctx dingo.Context, status int) bool {
 	n := fmt.Sprintf("%s%d.html", ERR_TMPL, status)
 	if v := views.Get(n); v != nil {
@@ -97,18 +151,32 @@ func Error(ctx dingo.Context, status int) bool {
 	return false
 }
 
-func Wrap(fn Handler) func(ctx dingo.Context) {
-	return func(ctx dingo.Context) {
-		c := new(Context)
-		c.Context = ctx
-		c.User = user.FromCookie(ctx.Request)
-
-		fn(*c)
+func Signin(ctx *Context, username, password string) {
+	if u, ok := user.Authenticate(username, password); ok {
+		// set Context user
+		ctx.User = u
+		// new session-key/cookie
+		k, c := NewExpireCookie()
+		// save the session-key
+		user.SetSession(u, k)
+		// add the cookie to the response
+		http.SetCookie(ctx.Writer, c)
 	}
+}
+
+func Signout(ctx *Context) {
+	if !ctx.User.IsAnonymous() {
+		user.SetSession(ctx.User, "")
+		ctx.User = user.Anonymous()
+	}
+	c := cookie("")
+	c.MaxAge = -1
+	http.SetCookie(ctx.Writer, c)
 }
 
 /*-----------------------------------Routes-----------------------------------*/
 type newRoute func(path string, h Handler) dingo.Route
+
 func iroute(route newRoute) dingo.NewIRoute {
 	var fn dingo.NewIRoute
 	fn = func(path string, h interface{}) dingo.Route {
@@ -139,6 +207,7 @@ func (s *Server) SRoute(path string, handler Handler, methods ...string) {
 func (s Server) ReRoute(path string, handler Handler, methods ...string) {
 	s.Server.ReRoute(path, Wrap(handler), methods...)
 }
+
 // TODO - need to create the wrapping here (since reflection is used to pass the context)
 /*func (s *Server) RRoute(path string, handler interface{}, methods ...string) {
 	fn = func(ctx dingo.Context) {
@@ -151,30 +220,36 @@ func (s *Server) SRouter(p string) dingo.Router {
 func (s *Server) ReRouter(p string) dingo.Router {
 	return dingo.NewRouter(s.Server, p, iroute(NewReRoute))
 }
+
 /*func (s *Server) RRouter(p string) Router {
 	return Router{s, p, NewRRoute}
 }*/
 
 func (s *Server) Serve() {
-	if config.UnixSocket {
-		log.Println("Wombat - listening on", config.SockFile)
+	if config.UnixSock {
+		log.Println("Wombat - listening on", config.UnixSockFile)
 	} else {
-		log.Printf("Wombat - listening on %s:%d\n", config.Host, config.Port)
+		log.Printf("Wombat - listening on %s:%d\n", config.ServerHost, config.ServerPort)
 	}
 
 	s.Server.Serve()
 }
+
 /*----------------------------------------------------------------------------*/
 
 func New() Server {
 	// load config
 	//config.Load()
+	if config.CookieExpires {
+		Wrap = wrapExpires
+		views.CanEdit = canEditExpire
+	} else {
+		// secure editable views
+		views.CanEdit = canEdit
+	}
 
 	// update empty template
 	views.EmptyTmpl = template.Empty
-
-	// secure editable views
-	views.CanEdit = canEdit
 
 	// editable view media
 	views.CodeMirrorJS = "//" + config.MediaURL + "js/vendor/codemirror.js"

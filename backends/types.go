@@ -5,9 +5,7 @@ import (
 )
 
 type Backend struct {
-	User           User
-	/*Address        Address
-	AddressMailing Address*/
+	User User
 }
 
 /* --------------------------------- Error ---------------------------------- */
@@ -22,7 +20,6 @@ const (
 
 type Error interface {
 	error
-	//Error() string
 	Status() Status
 	Critical() bool
 }

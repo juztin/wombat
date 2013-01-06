@@ -45,7 +45,7 @@ func (b userBackend) GetByUsername(username string) (backends.UserData, backends
 	if err := c.Find(bson.M{"username": username}).One(&d); err != nil {
 		return *d, backends.NewError(backends.StatusDatastoreError, "user authentication", err)
 	}
-	
+
 	return *d, nil
 }
 
@@ -68,7 +68,7 @@ func (b userBackend) GetBySession(key string) (backends.UserData, backends.Error
 	if err := c.Find(bson.M{"session": key}).One(&d); err != nil {
 		return *d, backends.NewError(backends.StatusDatastoreError, "user cache", err)
 	}
-	
+
 	return *d, nil
 }
 

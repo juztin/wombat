@@ -13,26 +13,26 @@ import (
 const CONFIG_FILE = "config.json"
 
 var (
-	CryptIter   = 12
-	Cookie      = "oatmeal"
-	Host        = "127.0.0.1"
-	Port        = 9999
-	Domain      = "juzt.in"
-	IsProd      = false
-	//Media     = "/var/web/nginx/juztin/projects"
-	ProjectPath = "/var/web/nginx/juztin/projects"
-	Pepper	    = "sYNRXbVSc0RwPJXmcKXJK.8IcoiBHMX7Lc0cNrCW3aImXQO9U/t26"
-	UnixSocket  = false
-	SockFile    = "/tmp/juztin.sock"
-	MediaURL    = "media.juzt.in/"
-	TmplEditRt  = "^/_dt/$"
-	TmplEditErr = false
-	TmplPath    = "./templates"
+	IsProd           = false
+	CryptIter        = 12
+	Cookie           = "oatmeal"
+	CookieExpires    = true
+	CookieExpireHash = "$uP{r - s@lTy _ st|_|fF"
+	CookieExpireTime = 15
+	ServerHost       = "127.0.0.1"
+	ServerPort       = 9999
+	ServerDomain     = "juzt.in"
+	UnixSock         = false
+	UnixSockFile     = "/tmp/juztin.sock"
+	MediaURL         = "media.juzt.in/"
+	TmplEditRt       = "^/_dt/$"
+	TmplEditErr      = false
+	TmplPath         = "./templates"
 
-	Backend     = "sqlite"
-	MongoURL    = "localhost"
-	MongoDB     = "wombat"
-	SqliteFile  = "./db.sqlite"
+	Backend    = "sqlite"
+	MongoURL   = "localhost"
+	MongoDB    = "wombat"
+	SqliteFile = "./db.sqlite"
 
 	cfg map[string]interface{}
 )
@@ -54,16 +54,17 @@ func setCfgString(key string, val *string) {
 }
 
 func setFromCfg() {
+	setCfgBool("isProd", &IsProd)
 	setCfgInt("cryptIter", &CryptIter)
 	setCfgString("cookie", &Cookie)
-	setCfgString("host", &Host)
-	setCfgInt("port", &Port)
-	setCfgString("domain", &Domain)
-	setCfgBool("isProd", &IsProd)
-	//setCfgString("media", &Media)
-	setCfgString("projectPath", &ProjectPath)
-	setCfgString("salt", &Pepper)
-	setCfgString("sockFile", &SockFile)
+	setCfgBool("cookieExpires", &CookieExpires)
+	setCfgString("cookieExpireHash", &CookieExpireHash)
+	setCfgInt("cookieExpireTime", &CookieExpireTime)
+	setCfgString("serverHost", &ServerHost)
+	setCfgInt("serverPort", &ServerPort)
+	setCfgString("serverDomain", &ServerDomain)
+	setCfgBool("unixSock", &UnixSock)
+	setCfgString("unixSockFile", &UnixSockFile)
 	setCfgString("mediaUrl", &MediaURL)
 	setCfgString("templateEditRoute", &TmplEditRt)
 	setCfgBool("templateEditErr", &TmplEditErr)
