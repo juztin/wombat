@@ -16,7 +16,6 @@ import (
 
 	"bitbucket.org/juztin/wombat/config"
 	"bitbucket.org/juztin/wombat/models/user"
-	"bitbucket.org/juztin/wombat/template"
 )
 
 /*-----------------------------------Fields------------------------------------*/
@@ -207,12 +206,10 @@ func (s *Server) SRoute(path string, handler Handler, methods ...string) {
 func (s Server) ReRoute(path string, handler Handler, methods ...string) {
 	s.Server.ReRoute(path, Wrap(handler), methods...)
 }
-
-// TODO - need to create the wrapping here (since reflection is used to pass the context)
-/*func (s *Server) RRoute(path string, handler interface{}, methods ...string) {
-	fn = func(ctx dingo.Context) {
-	}
-}*/
+func (s *Server) RRoute(path string, handler interface{}, methods ...string) {
+	rt := NewRRoute(path, handler)
+	s.Route(rt, methods...)
+}
 
 func (s *Server) SRouter(p string) dingo.Router {
 	return dingo.NewRouter(s.Server, p, iroute(NewSRoute))
@@ -220,10 +217,9 @@ func (s *Server) SRouter(p string) dingo.Router {
 func (s *Server) ReRouter(p string) dingo.Router {
 	return dingo.NewRouter(s.Server, p, iroute(NewReRoute))
 }
-
-/*func (s *Server) RRouter(p string) Router {
-	return Router{s, p, NewRRoute}
-}*/
+func (s *Server) RRouter(p string) dingo.Router {
+	return dingo.NewRouter(s.Server, p, NewRRoute)
+}
 
 func (s *Server) Serve() {
 	if config.UnixSock {
@@ -249,7 +245,7 @@ func New() Server {
 	}
 
 	// update empty template
-	views.EmptyTmpl = template.Empty
+	//views.EmptyTmpl = template.Empty
 
 	// editable view media
 	views.CodeMirrorJS = "//" + config.MediaURL + "js/vendor/codemirror.js"
