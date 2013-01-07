@@ -50,17 +50,6 @@ func (b userBackend) GetByUsername(username string) (backends.UserData, backends
 }
 
 func (b userBackend) GetBySession(key string) (backends.UserData, backends.Error) {
-	/*u := new(backends.UserData)
-	u.Username = "Juztin"
-	u.Firstname = "Justin"
-	u.Lastname = "Wilson"
-	u.Email = "justinwilson1@gmail.com"
-	u.Password = "@Q#$Q@#$ADFJASF"
-	u.Role = 666
-	u.Status = 1
-
-	return *u, nil*/
-
 	s, c := b.col("users")
 	defer s.Close()
 
