@@ -43,7 +43,12 @@ func cookie(val string) *http.Cookie {
 	c.Domain = config.ServerDomain
 	c.Path = "/"
 	c.HttpOnly = true
+	return c
+}
 
+func expiredCookie() *http.Cookie {
+	c := cookie("")
+	c.MaxAge = -1
 	return c
 }
 
@@ -92,13 +97,13 @@ func UpdatedExpireCookie(r *http.Request) (*http.Cookie, string, bool) {
 	// verify time
 	if (now - t) > int64(config.CookieExpireTime*60) {
 		// cookie has expired
-		return nil, "", false
+		return expiredCookie(), "", false
 	}
 
 	// verify signature
 	if s := expireCookieHash(fmt.Sprintf("%d|%s", t, k)); s != h {
 		log.Println("Invalid cookie signature: ", c)
-		return nil, "", false
+		return expiredCookie(), "", false
 	}
 
 	// return update cookie

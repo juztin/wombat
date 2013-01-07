@@ -106,12 +106,15 @@ func getUser(ctx dingo.Context) user.User {
 	return user.FromSession(GetCookieSession(ctx.Request))
 }
 
-func getExpireUser(ctx dingo.Context) user.User {
+func getExpireUser(ctx dingo.Context) (u user.User) {
 	if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
 		http.SetCookie(ctx.Writer, cookie)
-		return user.FromSession(key)
+		u = user.FromSession(key)
+	} else {
+		http.SetCookie(ctx.Writer, cookie)
+		u = user.Anonymous()
 	}
-	return user.Anonymous()
+	return u
 }
 
 func wrap(fn Handler) func(ctx dingo.Context) {
@@ -168,9 +171,7 @@ func Signout(ctx *Context) {
 		user.SetSession(ctx.User, "")
 		ctx.User = user.Anonymous()
 	}
-	c := cookie("")
-	c.MaxAge = -1
-	http.SetCookie(ctx.Writer, c)
+	http.SetCookie(ctx.Writer, expiredCookie())
 }
 
 /*-----------------------------------Routes-----------------------------------*/
