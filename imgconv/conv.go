@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"image"
-	"image/jpeg"
 	_ "image/gif"
+	"image/jpeg"
 	_ "image/png"
 	"io/ioutil"
 	"os"
@@ -35,7 +35,7 @@ func Decode(fpath string) (image.Image, string, error) {
 
 func ResizeWidth(img image.Image, width int) (image.Image, error) {
 	s := img.Bounds().Size()
-	h := int((float32(width)/float32(s.X))*float32(s.Y))
+	h := int((float32(width) / float32(s.X)) * float32(s.Y))
 	r := image.NewRGBA(image.Rect(0, 0, width, h))
 
 	if err := graphics.Scale(r, img); err != nil {

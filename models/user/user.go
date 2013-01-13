@@ -35,10 +35,10 @@ type user struct {
 }
 
 func init() {
-	if backend, err := backends.Open(config.Backend); err != nil {
-		log.Fatal("Failed to get backend")
+	if backend, err := backends.UserBackend(); err != nil {
+		log.Fatal("Failed to get user backend")
 	} else {
-		b = backend.User
+		b = backend
 	}
 }
 
@@ -97,7 +97,7 @@ func Anonymous() User {
 }
 
 func Authenticate(username, password string) (User, bool) {
-	m, err := b.GetByUsername(username)
+	m, err := b.ByUsername(username)
 	if err != nil {
 		log.Printf("Failed to get user: ", username, " : ", err)
 		return Anonymous(), false
@@ -117,7 +117,7 @@ func FromSession(key string) User {
 		return Anonymous()
 	}
 
-	m, err := b.GetBySession(key)
+	m, err := b.BySession(key)
 	if err != nil {
 		log.Printf("Failed to get user from cache:%v\n", err)
 		return Anonymous()

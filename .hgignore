@@ -6,6 +6,8 @@ syntax: glob
 *.o
 *.swo
 *.swp
+# I've been using these for temp things that don't need to be in repo
+*.og
 _go_.*
 _obj*
 

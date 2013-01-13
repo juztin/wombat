@@ -144,12 +144,23 @@ func wrapExpires(fn Handler) func(ctx dingo.Context) {
 }
 
 func Error(ctx dingo.Context, status int) bool {
+	// default to 500 if in invalid status is given
+	if status < 100 || status > 505 {
+		status = 500
+		// TODO Log an error
+	}
+	w := ctx.Writer
+	w.WriteHeader(status)
+
+	// write matching error template
 	n := fmt.Sprintf("%s%d.html", ERR_TMPL, status)
 	if v := views.Get(n); v != nil {
 		v.Execute(ctx, nil)
-		return true
+	} else {
+		m := []byte(http.StatusText(status))
+		w.Write(m)
 	}
-	return false
+	return true
 }
 
 func Signin(ctx *Context, username, password string) {

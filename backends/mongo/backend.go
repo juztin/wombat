@@ -21,9 +21,7 @@ func init() {
 		// set monotonic mode
 		session.SetMode(mgo.Monotonic, true)
 		// register backend
-		backends.Register("mongo", backends.Backend{
-			User: userBackend{session},
-		})
+		backends.Register("mongo:user", userBackend{session})
 	}
 }
 
@@ -37,7 +35,7 @@ func (b userBackend) col(name string) (*mgo.Session, *mgo.Collection) {
 	return s, s.DB(config.MongoDB).C(name)
 }
 
-func (b userBackend) GetByUsername(username string) (backends.UserData, backends.Error) {
+func (b userBackend) ByUsername(username string) (backends.UserData, backends.Error) {
 	s, c := b.col("users")
 	defer s.Close()
 
@@ -49,7 +47,7 @@ func (b userBackend) GetByUsername(username string) (backends.UserData, backends
 	return *d, nil
 }
 
-func (b userBackend) GetBySession(key string) (backends.UserData, backends.Error) {
+func (b userBackend) BySession(key string) (backends.UserData, backends.Error) {
 	s, c := b.col("users")
 	defer s.Close()
 

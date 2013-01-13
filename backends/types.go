@@ -4,9 +4,7 @@ import (
 	"fmt"
 )
 
-type Backend struct {
-	User User
-}
+type Backend interface{}
 
 /* --------------------------------- Error ---------------------------------- */
 type Status int
