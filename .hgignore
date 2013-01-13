@@ -12,3 +12,5 @@ _go_.*
 _obj*
 
 test_routes.go.txt
+
+./apps
