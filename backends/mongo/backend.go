@@ -10,7 +10,7 @@ import (
 	"bitbucket.org/juztin/wombat/config"
 )
 
-type userBackend struct {
+type UserBackend struct {
 	session *mgo.Session
 }
 
@@ -21,21 +21,21 @@ func init() {
 		// set monotonic mode
 		session.SetMode(mgo.Monotonic, true)
 		// register backend
-		backends.Register("mongo:user", userBackend{session})
+		backends.Register("mongo:user", UserBackend{session})
 	}
 }
 
-func (b userBackend) db() (*mgo.Session, *mgo.Database) {
+func (b UserBackend) db() (*mgo.Session, *mgo.Database) {
 	s := b.session.New()
 	return s, s.DB(config.MongoDB)
 }
 
-func (b userBackend) col(name string) (*mgo.Session, *mgo.Collection) {
+func (b UserBackend) col(name string) (*mgo.Session, *mgo.Collection) {
 	s := b.session.New()
 	return s, s.DB(config.MongoDB).C(name)
 }
 
-func (b userBackend) ByUsername(username string) (backends.UserData, backends.Error) {
+func (b UserBackend) ByUsername(username string) (backends.UserData, backends.Error) {
 	s, c := b.col("users")
 	defer s.Close()
 
@@ -47,7 +47,7 @@ func (b userBackend) ByUsername(username string) (backends.UserData, backends.Er
 	return *d, nil
 }
 
-func (b userBackend) BySession(key string) (backends.UserData, backends.Error) {
+func (b UserBackend) BySession(key string) (backends.UserData, backends.Error) {
 	s, c := b.col("users")
 	defer s.Close()
 
@@ -59,7 +59,7 @@ func (b userBackend) BySession(key string) (backends.UserData, backends.Error) {
 	return *d, nil
 }
 
-func (b userBackend) SetSession(username, key string) backends.Error {
+func (b UserBackend) SetSession(username, key string) backends.Error {
 	s, c := b.col("users")
 	defer s.Close()
 

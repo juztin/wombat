@@ -14,7 +14,7 @@ import (
 
 const COL_NAME = "articles"
 
-type articleBackend struct {
+type ArticleBackend struct {
 	session *mgo.Session
 }
 
@@ -25,21 +25,21 @@ func init() {
 		// set monotonic mode
 		session.SetMode(mgo.Monotonic, true)
 		// register backend
-		backends.Register("mongo:apps:article", articleBackend{session})
+		backends.Register("mongo:apps:article", ArticleBackend{session})
 	}
 }
 
-func (b articleBackend) db() (*mgo.Session, *mgo.Database) {
+func (b ArticleBackend) db() (*mgo.Session, *mgo.Database) {
 	s := b.session.New()
 	return s, s.DB(config.MongoDB)
 }
 
-func (b articleBackend) col() (*mgo.Session, *mgo.Collection) {
+func (b ArticleBackend) col() (*mgo.Session, *mgo.Collection) {
 	s := b.session.New()
 	return s, s.DB(config.MongoDB).C(COL_NAME)
 }
 
-func (b articleBackend) ByTitlePath(titlePath string) (ab.ArticleData, backends.Error) {
+func (b ArticleBackend) ByTitlePath(titlePath string) (ab.ArticleData, backends.Error) {
 	s, c := b.col()
 	defer s.Close()
 
@@ -52,7 +52,7 @@ func (b articleBackend) ByTitlePath(titlePath string) (ab.ArticleData, backends.
 	return *d, nil
 }
 
-func (b articleBackend) Create(a ab.ArticleData) backends.Error {
+func (b ArticleBackend) Create(a ab.ArticleData) backends.Error {
 	s, c := b.col()
 	defer s.Close()
 
@@ -64,7 +64,7 @@ func (b articleBackend) Create(a ab.ArticleData) backends.Error {
 	return nil
 }
 
-func (b articleBackend) UpdateContent(titlePath, content string, modified time.Time) backends.Error {
+func (b ArticleBackend) UpdateContent(titlePath, content string, modified time.Time) backends.Error {
 	s, c := b.col()
 	defer s.Close()
 
@@ -78,11 +78,11 @@ func (b articleBackend) UpdateContent(titlePath, content string, modified time.T
 	return nil
 }
 
-func (b articleBackend) Delete(titlepath string) backends.Error {
+func (b ArticleBackend) Delete(titlepath string) backends.Error {
 	return nil
 }
 
-func (b articleBackend) SetImg(titlePath string, img ab.ImgData) backends.Error {
+func (b ArticleBackend) SetImg(titlePath string, img ab.ImgData) backends.Error {
 	// update article image/thumb
 	session, col := b.col()
 	defer session.Close()
@@ -95,7 +95,7 @@ func (b articleBackend) SetImg(titlePath string, img ab.ImgData) backends.Error 
 	return nil
 }
 
-func (b articleBackend) SetImgs(titlePath string, imgs []ab.ImgData) backends.Error {
+func (b ArticleBackend) SetImgs(titlePath string, imgs []ab.ImgData) backends.Error {
 	// update article images
 	session, col := b.col()
 	defer session.Close()
