@@ -15,12 +15,18 @@ import (
 
 const COL_NAME = "users"
 
+var (
+	db = "main"
+)
+
 type Backend struct {
 	session *mgo.Session
 }
 
 func init() {
-	if session, err := mgo.Dial(config.MongoURL); err != nil {
+	if url, ok := config.GroupString("db", "mongoURL"); !ok {
+		log.Fatal("users mongo: MongoURL missing from configuration")
+	} else if session, err := mgo.Dial(url); err != nil {
 		log.Fatal("Failed to retrieve Mongo session: ", err)
 	} else {
 		// set monotonic mode
@@ -30,11 +36,15 @@ func init() {
 		backends.Register("mongo:user-reader", b)
 		backends.Register("mongo:user-writer", b)
 	}
+
+	if d, ok := config.GroupString("db", "mongoDB"); ok {
+		db = d
+	}
 }
 
 func (b Backend) col() (*mgo.Session, *mgo.Collection) {
 	s := b.session.New()
-	return s, s.DB(config.MongoDB).C(COL_NAME)
+	return s, s.DB(db).C(COL_NAME)
 }
 
 // Reader
