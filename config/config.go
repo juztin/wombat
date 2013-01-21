@@ -29,7 +29,6 @@ var (
 	TmplEditErr      = false
 	TmplPath         = "./templates"
 
-	Backend    = "sqlite"
 	MongoURL   = "localhost"
 	MongoDB    = "wombat"
 	SqliteFile = "./db.sqlite"
@@ -70,7 +69,6 @@ func setFromCfg() {
 	setCfgBool("templateEditErr", &TmplEditErr)
 	setCfgString("templatePath", &TmplPath)
 
-	setCfgString("backend", &Backend)
 	setCfgString("mongoURL", &MongoURL)
 	setCfgString("mongoDB", &MongoDB)
 	setCfgString("sqliteFile", &SqliteFile)
