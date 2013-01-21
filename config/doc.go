@@ -20,7 +20,7 @@
 	"templates": {
 		"editRoute": "editor",
 		"editErr": true,
-		"path": "~/templates/"
+		"path": "./templates/"
 	},
 	"db": {
 		"mongoURL": "127.0.0.1",
