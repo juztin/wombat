@@ -15,17 +15,18 @@ import (
 	"bitbucket.org/juztin/dingo/views"
 
 	"bitbucket.org/juztin/wombat/config"
-	"bitbucket.org/juztin/wombat/models/user"
+	"bitbucket.org/juztin/wombat/users"
 )
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION  string = "0.0.1"
+	VERSION  string = "0.1.0"
 	ERR_TMPL string = "/errors/"
 )
 
 var (
-	Wrap Wrapper = wrap
+	Wrap  Wrapper = wrap
+	Users users.Users
 )
 
 //var httpCodes = []int64{401, 404, 500, 501}
@@ -37,7 +38,7 @@ type Server struct {
 
 type Context struct {
 	dingo.Context
-	User user.User
+	User users.User
 }
 
 type Handler func(ctx Context)
@@ -102,18 +103,24 @@ func addErrViews(path string) {
 	}
 }
 
-func getUser(ctx dingo.Context) user.User {
-	return user.FromSession(GetCookieSession(ctx.Request))
+func getUser(ctx dingo.Context) users.User {
+	u, err := Users.BySession(GetCookieSession(ctx.Request))
+	if err != nil {
+		return users.NewAnonymous()
+	}
+	return u
 }
 
-func getExpireUser(ctx dingo.Context) user.User {
+func getExpireUser(ctx dingo.Context) users.User {
 	if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
 		http.SetCookie(ctx.Writer, cookie)
-		return user.FromSession(key)
+		if u, err := Users.BySession(key); err == nil {
+			return u
+		}
 	} else if cookie != nil {
 		http.SetCookie(ctx.Writer, cookie)
 	}
-	return user.Anonymous()
+	return users.NewAnonymous()
 }
 
 func wrap(fn Handler) func(ctx dingo.Context) {
@@ -164,13 +171,13 @@ func Error(ctx dingo.Context, status int) bool {
 }
 
 func Signin(ctx *Context, username, password string) {
-	if u, ok := user.Authenticate(username, password); ok {
+	if u, err := Users.Signin(username, password); err == nil {
 		// set Context user
 		ctx.User = u
 		// new session-key/cookie
 		k, c := NewExpireCookie()
 		// save the session-key
-		user.SetSession(u, k)
+		u.SetSession(k)
 		// add the cookie to the response
 		http.SetCookie(ctx.Writer, c)
 	}
@@ -178,8 +185,8 @@ func Signin(ctx *Context, username, password string) {
 
 func Signout(ctx *Context) {
 	if !ctx.User.IsAnonymous() {
-		user.SetSession(ctx.User, "")
-		ctx.User = user.Anonymous()
+		ctx.User.SetSession("")
+		ctx.User = users.NewAnonymous()
 	}
 	http.SetCookie(ctx.Writer, expiredCookie())
 }
@@ -277,6 +284,9 @@ func New() Server {
 
 	// set a default error handler
 	dingo.ErrorHandler = Error
+
+	// set `users` factory
+	Users = users.New()
 
 	// return the server so that routes can be added
 	return Server{&s, Wrap}

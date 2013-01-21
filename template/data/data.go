@@ -3,17 +3,15 @@ package data
 import (
 	"bitbucket.org/juztin/wombat"
 	"bitbucket.org/juztin/wombat/config"
-	"bitbucket.org/juztin/wombat/models/user"
+	"bitbucket.org/juztin/wombat/users"
 )
 
 type Data struct {
 	cookieKey        string
 	IsProd           bool
 	MediaURL, Domain string
-	User             user.User
+	User             users.User
 }
-
-var anonymousUser = user.Anonymous()
 
 func New(ctx wombat.Context) Data {
 	t := new(Data)

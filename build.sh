@@ -2,9 +2,10 @@
 
 go build ../wombat \
 	../wombat/backends \
-	../wombat/backends/mongo \
 	../wombat/config \
 	../wombat/imgconv \
-	../wombat/models/user \
 	../wombat/template \
 	../wombat/template/data \
+	../wombat/users \
+	../wombat/users/backends \
+	../wombat/users/backends/mongo
