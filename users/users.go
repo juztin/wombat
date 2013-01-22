@@ -18,6 +18,7 @@ type Data struct {
 	Email      string    `email`
 	Password   string    `password`
 	Session    string    `session`
+	Locale     string    `locale`
 	Role       int       `role`
 	Status     int       `status`
 	LastSignin time.Time `lastSignin`
