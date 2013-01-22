@@ -52,6 +52,7 @@ type User interface {
 	Email() string
 	Password() string
 	Session() string
+	Locale() string
 	IsAdmin() bool
 	IsAnonymous() bool
 	IsActive() bool
@@ -101,6 +102,9 @@ func (m Model) Password() string {
 }
 func (m Model) Session() string {
 	return m.Data.Session
+}
+func (m Model) Locale() string {
+	return m.Data.Locale
 }
 func (m Model) IsAdmin() bool {
 	// admin flag is 1 AND status is active
