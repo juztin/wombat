@@ -23,6 +23,8 @@ type Backend struct {
 	session *mgo.Session
 }
 
+type queryFunc func(c *mgo.Collection)
+
 func init() {
 	if url, ok := config.GroupString("db", "mongoURL"); !ok {
 		log.Fatal("users mongo: MongoURL missing from configuration")
@@ -42,14 +44,19 @@ func init() {
 	}
 }
 
-func (b Backend) col() (*mgo.Session, *mgo.Collection) {
+func (b Backend) Col() (*mgo.Session, *mgo.Collection) {
 	s := b.session.New()
 	return s, s.DB(db).C(COL_NAME)
+}
+func (b Backend) Query(fn queryFunc) {
+	s, c := b.Col()
+	defer s.Close()
+	fn(c)
 }
 
 // Reader
 func (b Backend) ByUsername(username string) (users.User, error) {
-	s, c := b.col()
+	s, c := b.Col()
 	defer s.Close()
 
 	u := users.Model{b, new(users.Data)}
@@ -61,7 +68,7 @@ func (b Backend) ByUsername(username string) (users.User, error) {
 }
 
 func (b Backend) BySession(key string) (users.User, error) {
-	s, c := b.col()
+	s, c := b.Col()
 	defer s.Close()
 
 	u := users.Model{b, new(users.Data)}
@@ -73,9 +80,8 @@ func (b Backend) BySession(key string) (users.User, error) {
 }
 
 // Writer
-//func (b Backend) UpdateSession(username, key string) backends.Error {
 func (b Backend) UpdateSession(username, key string) error {
-	s, c := b.col()
+	s, c := b.Col()
 	defer s.Close()
 
 	selector := bson.M{"username": username}
@@ -88,7 +94,7 @@ func (b Backend) UpdateSession(username, key string) error {
 }
 
 func (b Backend) UpdateLastSignin(username string, on time.Time) error {
-	s, c := b.col()
+	s, c := b.Col()
 	defer s.Close()
 
 	selector := bson.M{"username": username}

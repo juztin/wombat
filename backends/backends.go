@@ -14,6 +14,13 @@ func Register(name string, backend Backend) {
 	backends[name] = backend
 }
 
+func Update(name string, backend Backend) {
+	if _, exists := backends[name]; !exists {
+		log.Fatal("backends: No driver found to update ", name)
+	}
+	backends[name] = backend
+}
+
 func Open(name string) (Backend, error) {
 	b, ok := backends[name]
 	if !ok {
