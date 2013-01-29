@@ -22,6 +22,9 @@
 		"editErr": true,
 		"path": "./templates/"
 	},
+	"user": {
+		"reader": "mongo:user-reader"
+	},
 	"db": {
 		"mongoURL": "127.0.0.1",
 		"mongoDB": "main"

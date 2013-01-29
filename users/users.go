@@ -8,6 +8,7 @@ import (
 	"code.google.com/p/go.crypto/bcrypt"
 
 	"bitbucket.org/juztin/wombat/backends"
+	"bitbucket.org/juztin/wombat/config"
 )
 
 type Data struct {
@@ -46,6 +47,7 @@ type Users struct {
 
 type User interface {
 	Writer
+	CheckPassword(p string) bool
 	Username() string
 	Firstname() string
 	Lastname() string
@@ -64,7 +66,7 @@ type User interface {
 
 func New() Users {
 	var r Reader
-	if p, err := backends.Open("mongo:user-reader"); err != nil {
+	if p, err := backends.Open(config.UserReader); err != nil {
 		log.Fatal("No 'user' reader available")
 	} else {
 		if o, ok := p.(Reader); !ok {
@@ -85,6 +87,19 @@ func NewAnonymous() User {
 }
 
 // Model
+func (m Model) CheckPassword(p string) bool {
+	p1, p2 := []byte(m.Password()), []byte(p)
+	if err := bcrypt.CompareHashAndPassword(p1, p2); err != nil {
+		log.Printf("Failed to compare password hashes: ", err)
+		return false
+		//return NewAnonymous(), errors.New("Authentication")
+	} else {
+		if err = m.UpdateLastSignin(m.Username(), time.Now()); err != nil {
+			log.Println("Failed to update 'lastSignin' time ", err)
+		}
+	}
+	return true
+}
 func (m Model) Username() string {
 	return m.Data.Username
 }
@@ -136,16 +151,9 @@ func (u *Users) Signin(username, password string) (User, error) {
 	user, ok := o.(User)
 	if !ok {
 		return NewAnonymous(), errors.New("Invalid 'users' object")
+	} else if ok = user.CheckPassword(password); !ok {
+		return NewAnonymous(), errors.New("Authentication")
 	}
 
-	p1, p2 := []byte(user.Password()), []byte(password)
-	if err := bcrypt.CompareHashAndPassword(p1, p2); err != nil {
-		log.Printf("Failed to compare password hashes: ", err)
-		return NewAnonymous(), errors.New("Authentication")
-	} else {
-		if err = user.UpdateLastSignin(user.Username(), time.Now()); err != nil {
-			log.Println("Failed to update 'lastSignin' time ", err)
-		}
-	}
 	return user, nil
 }

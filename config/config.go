@@ -27,6 +27,8 @@ var (
 	TmplEditRt       = "^/_dt/$"
 	TmplEditErr      = false
 	TmplPath         = "./templates"
+	UserReader       = "mongo:user-reader"
+	//UserWriter       = "mongo:user-writer"
 
 	//MongoURL   = "localhost"
 	//MongoDB    = "wombat"
@@ -76,6 +78,8 @@ func setFromCfg() {
 	setCfgGroupString("templates", "path", &TmplPath)
 
 	// database
+	setCfgGroupString("user", "reader", &UserReader)
+	//setCfgGroupString("user", "writer", &UserWriter)
 	//setCfgGroupString("db", "mongoURL", &MongoURL)
 	//setCfgGroupString("db", "mongoDB", &MongoDB)
 	//setCfgGroupString("db", "sqliteFile", &SqliteFile)
