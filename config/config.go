@@ -21,6 +21,9 @@ var (
 	ServerHost       = "127.0.0.1"
 	ServerPort       = 9999
 	ServerDomain     = "juzt.in"
+	TLS              = false
+	TLSCert          = ""
+	TLSKey           = ""
 	UnixSock         = false
 	UnixSockFile     = "/tmp/juztin.sock"
 	MediaURL         = "media.juzt.in/"
@@ -62,6 +65,9 @@ func setFromCfg() {
 	setCfgGroupString("server", "domain", &ServerDomain)
 	setCfgGroupBool("server", "unixSock", &UnixSock)
 	setCfgGroupString("server", "unixSockFile", &UnixSockFile)
+	setCfgGroupBool("server", "tls", &TLS)
+	setCfgGroupString("server", "tlsCert", &TLSCert)
+	setCfgGroupString("server", "tlsKey", &TLSKey)
 
 	// cookie
 	setCfgGroupString("cookie", "name", &Cookie)

@@ -20,7 +20,7 @@ import (
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION  string = "0.1.1"
+	VERSION  string = "0.1.2"
 	ERR_TMPL string = "/errors/"
 )
 
@@ -50,10 +50,12 @@ func SetWrapper(fn Wrapper) {
 }
 
 func dingoHandler() (net.Listener, error) {
-	if !config.UnixSock {
-		return dingo.HttpHandler(config.ServerHost, config.ServerPort)
+	if config.UnixSock {
+		return dingo.SOCKHandler(config.UnixSockFile, os.ModePerm)
+	} else if config.TLS {
+		return dingo.TLSHandler(config.ServerHost, config.ServerPort, config.TLSCert, config.TLSKey)
 	}
-	return dingo.SOCKHandler(config.UnixSockFile, os.ModePerm)
+	return dingo.HttpHandler(config.ServerHost, config.ServerPort)
 }
 
 func canEdit(ctx dingo.Context) bool {
@@ -242,6 +244,8 @@ func (s *Server) RRouter(p string) dingo.Router {
 func (s *Server) Serve() {
 	if config.UnixSock {
 		log.Println("Wombat - listening on", config.UnixSockFile)
+	} else if config.TLS {
+		log.Printf("Wombat - listening on TLS %s:%d\n", config.ServerHost, config.ServerPort)
 	} else {
 		log.Printf("Wombat - listening on %s:%d\n", config.ServerHost, config.ServerPort)
 	}
