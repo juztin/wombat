@@ -220,6 +220,8 @@ func NewReRoute(re string, handler Handler) dingo.Route {
 }
 
 /*-----------------------------------Server-----------------------------------*/
+/*func (s *Server) Route(rt wombat.Route, methods ...string) {
+}*/
 func (s *Server) SRoute(path string, handler Handler, methods ...string) {
 	s.Server.SRoute(path, Wrap(handler), methods...)
 }
@@ -228,7 +230,7 @@ func (s Server) ReRoute(path string, handler Handler, methods ...string) {
 }
 func (s *Server) RRoute(path string, handler interface{}, methods ...string) {
 	rt := NewRRoute(path, handler)
-	s.Route(rt, methods...)
+	s.Server.Route(rt, methods...)
 }
 
 func (s *Server) SRouter(p string) dingo.Router {
