@@ -31,6 +31,10 @@ func (r rRoute) Path() string {
 	return r.path
 }
 
+func (r rRoute) IsCanonical() bool {
+	return true
+}
+
 func (r rRoute) Matches(url string) bool {
 	return r.expr.MatchString(url)
 }

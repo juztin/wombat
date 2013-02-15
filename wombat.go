@@ -20,7 +20,7 @@ import (
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION  string = "0.1.2"
+	VERSION  string = "0.1.3"
 	ERR_TMPL string = "/errors/"
 )
 
