@@ -10,9 +10,8 @@ import (
 	"path/filepath"
 )
 
-const CONFIG_FILE = "config.json"
-
 var (
+	ConfigFile       = "config.json"
 	IsProd           = false
 	Cookie           = "oatmeal"
 	CookieExpires    = true
@@ -47,12 +46,12 @@ func init() {
 	// get|read configuration from file
 	p, c, err := getConfig()
 	if err != nil {
-		log.Fatalf("Failed to load configuration file: %s, from: %s\n%v", CONFIG_FILE, p, err)
+		log.Fatalf("Failed to load configuration file: %s, from: %s\n%v", ConfigFile, p, err)
 	}
 
 	var j interface{}
 	if err := json.Unmarshal(c, &j); err != nil {
-		log.Fatalf("Failed to read configuration file: %s, from: %s\n%v", CONFIG_FILE, p, err)
+		log.Fatalf("Failed to read configuration file: %s, from: %s\n%v", ConfigFile, p, err)
 	}
 
 	cfg = j.(map[string]interface{})
@@ -97,7 +96,7 @@ func setFromCfg() {
 
 func getConfig() (p string, c []byte, e error) {
 	p = filepath.Dir(os.Args[0])
-	f := filepath.Join(p, CONFIG_FILE)
+	f := filepath.Join(p, ConfigFile)
 
 	// if a config file exists within the executables path
 	if _, err := os.Stat(f); err == nil {
@@ -107,7 +106,7 @@ func getConfig() (p string, c []byte, e error) {
 
 	// if a config file exists within the current working dir
 	if p, e = os.Getwd(); e == nil {
-		f = filepath.Join(p, CONFIG_FILE)
+		f = filepath.Join(p, ConfigFile)
 		if _, e = os.Stat(f); e == nil {
 			c, e = ioutil.ReadFile(f)
 			return
@@ -116,7 +115,7 @@ func getConfig() (p string, c []byte, e error) {
 
 	// no configuration was found
 	p = ""
-	e = errors.New(fmt.Sprintf("Failed to find a configuration file: %s", CONFIG_FILE))
+	e = errors.New(fmt.Sprintf("Failed to find a configuration file: %s", ConfigFile))
 
 	return
 }
