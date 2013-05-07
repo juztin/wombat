@@ -19,6 +19,7 @@ var (
 	CookieExpireTime = 15
 	CookiePath       = "/"
 	CookieHttpOnly   = true
+	CookieSecure     = true
 	ServerHost       = "127.0.0.1"
 	ServerPort       = 9999
 	ServerDomain     = "juzt.in"
@@ -72,11 +73,12 @@ func setFromCfg() {
 
 	// cookie
 	setCfgGroupString("cookie", "name", &Cookie)
-	setCfgGroupString("cookie", "path", &CookiePath)
-	setCfgGroupBool("cookie", "httpOnly", &CookieHttpOnly)
 	setCfgGroupBool("cookie", "expires", &CookieExpires)
 	setCfgGroupString("cookie", "expireHash", &CookieExpireHash)
 	setCfgGroupInt("cookie", "expireTime", &CookieExpireTime)
+	setCfgGroupString("cookie", "path", &CookiePath)
+	setCfgGroupBool("cookie", "httpOnly", &CookieHttpOnly)
+	setCfgGroupBool("cookie", "secure", &CookieSecure)
 
 	// media
 	setCfgGroupString("media", "url", &MediaURL)

@@ -43,6 +43,7 @@ func cookie(val string) *http.Cookie {
 	c.Domain = config.ServerDomain
 	c.Path = config.CookiePath
 	c.HttpOnly = config.CookieHttpOnly
+	c.Secure = config.CookieSecure
 	return c
 }
 
