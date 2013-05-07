@@ -20,7 +20,7 @@ import (
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION  string = "0.1.5"
+	VERSION  string = "0.1.6"
 	ERR_TMPL string = "/errors/"
 )
 
@@ -173,7 +173,9 @@ func Error(ctx dingo.Context, status int) bool {
 }
 
 func Signin(ctx *Context, username, password string) {
-	if u, err := Users.Signin(username, password); err == nil {
+	if u, err := Users.Signin(username, password); err != nil {
+		log.Println("User signin failed:", err)
+	} else {
 		// set Context user
 		ctx.User = u
 		// new session-key/cookie
