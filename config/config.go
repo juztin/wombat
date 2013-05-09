@@ -29,6 +29,7 @@ var (
 	UnixSock         = false
 	UnixSockFile     = "/tmp/juztin.sock"
 	MediaURL         = "media.juzt.in/"
+	SigninURL        = "/account/"
 	TmplEditRt       = "^/_dt/$"
 	TmplEditErr      = false
 	TmplPath         = "./templates"
@@ -65,6 +66,7 @@ func setFromCfg() {
 	setCfgGroupString("server", "host", &ServerHost)
 	setCfgGroupInt("server", "port", &ServerPort)
 	setCfgGroupString("server", "domain", &ServerDomain)
+	setCfgGroupString("server", "signinUrl", &SigninURL)
 	setCfgGroupBool("server", "unixSock", &UnixSock)
 	setCfgGroupString("server", "unixSockFile", &UnixSockFile)
 	setCfgGroupBool("server", "tls", &TLS)

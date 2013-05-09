@@ -8,4 +8,5 @@ go build ../wombat \
 	../wombat/template/data \
 	../wombat/users \
 	../wombat/users/backends \
-	../wombat/users/backends/mongo
+	../wombat/users/backends/mongo \
+	../wombat/wraps
