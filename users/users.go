@@ -41,8 +41,9 @@ type Writer interface {
 	UpdateLastSignin(username string, on time.Time) error
 }
 
-type Users struct {
+type Users interface {
 	Reader
+	Signin(username, password string) (User, error)
 }
 
 type User interface {
@@ -64,6 +65,14 @@ type User interface {
 	SetSession(key string) error
 }
 
+type users struct {
+	Reader
+}
+
+type usersFn func(r Reader) Users
+
+var NewUsersFn usersFn = newUsers
+
 func New() Users {
 	var r Reader
 	if p, err := backends.Open(config.UserReader); err != nil {
@@ -75,7 +84,11 @@ func New() Users {
 			r = o
 		}
 	}
-	return Users{r}
+	return NewUsersFn(r)
+}
+
+func newUsers(r Reader) Users {
+	return &users{r}
 }
 
 func NewAnonymous() User {
@@ -92,7 +105,6 @@ func (m Model) CheckPassword(p string) bool {
 	if err := bcrypt.CompareHashAndPassword(p1, p2); err != nil {
 		log.Printf("Failed to compare password hashes: ", err)
 		return false
-		//return NewAnonymous(), errors.New("Authentication")
 	} else {
 		if err = m.UpdateLastSignin(m.Username(), time.Now()); err != nil {
 			log.Println("Failed to update 'lastSignin' time ", err)
@@ -142,7 +154,7 @@ func (m Model) SetSession(key string) error {
 }
 
 // Users
-func (u *Users) Signin(username, password string) (User, error) {
+func (u *users) Signin(username, password string) (User, error) {
 	o, err := u.Reader.ByUsername(username)
 	if err != nil {
 		return NewAnonymous(), err
