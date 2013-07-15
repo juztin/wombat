@@ -20,7 +20,7 @@ import (
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION  string = "0.2.1"
+	VERSION  string = "0.2.2"
 	ERR_TMPL string = "/errors/"
 )
 
@@ -51,11 +51,11 @@ func SetWrapper(fn Wrapper) {
 
 func dingoHandler() (net.Listener, error) {
 	if config.UnixSock {
-		return dingo.SOCKHandler(config.UnixSockFile, os.ModePerm)
+		return dingo.SOCKListener(config.UnixSockFile, os.ModePerm)
 	} else if config.TLS {
-		return dingo.TLSHandler(config.ServerHost, config.ServerPort, config.TLSCert, config.TLSKey)
+		return dingo.TLSListener(config.ServerHost, config.ServerPort, config.TLSCert, config.TLSKey)
 	}
-	return dingo.HttpHandler(config.ServerHost, config.ServerPort)
+	return dingo.HttpListener(config.ServerHost, config.ServerPort)
 }
 
 func canEdit(ctx dingo.Context) bool {
@@ -115,12 +115,12 @@ func getUser(ctx dingo.Context) users.User {
 
 func getExpireUser(ctx dingo.Context) users.User {
 	if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
-		http.SetCookie(ctx.Writer, cookie)
+		http.SetCookie(ctx.Response, cookie)
 		if u, err := Users.BySession(key); err == nil {
 			return u
 		}
 	} else if cookie != nil {
-		http.SetCookie(ctx.Writer, cookie)
+		http.SetCookie(ctx.Response, cookie)
 	}
 	return users.NewAnonymous()
 }
@@ -143,7 +143,7 @@ func wrapExpires(fn Handler) func(ctx dingo.Context) {
 		c.User = getExpireUser(ctx)
 		/*if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
 			c.User = user.FromSession(key)
-			http.SetCookie(ctx.Writer, cookie)
+			http.SetCookie(ctx.Response, cookie)
 		} else {
 			c.User = user.Anonymous()
 		}*/
@@ -158,8 +158,8 @@ func Error(ctx dingo.Context, status int) bool {
 		status = 500
 		// TODO Log an error
 	}
-	w := ctx.Writer
-	w.WriteHeader(status)
+	r := ctx.Response
+	r.WriteHeader(status)
 
 	// write matching error template
 	n := fmt.Sprintf("%s%d.html", ERR_TMPL, status)
@@ -167,7 +167,7 @@ func Error(ctx dingo.Context, status int) bool {
 		v.Execute(ctx, nil)
 	} else {
 		m := []byte(http.StatusText(status))
-		w.Write(m)
+		r.Write(m)
 	}
 	return true
 }
@@ -184,7 +184,7 @@ func Signin(ctx *Context, username, password string) (err error) {
 		// save the session-key
 		u.SetSession(k)
 		// add the cookie to the response
-		http.SetCookie(ctx.Writer, c)
+		http.SetCookie(ctx.Response, c)
 	}
 	return
 }
@@ -194,7 +194,7 @@ func Signout(ctx *Context) {
 		ctx.User.SetSession("")
 		ctx.User = users.NewAnonymous()
 	}
-	http.SetCookie(ctx.Writer, expiredCookie())
+	http.SetCookie(ctx.Response, expiredCookie())
 }
 
 /*-----------------------------------Routes-----------------------------------*/
