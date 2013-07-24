@@ -36,15 +36,27 @@ var (
 	UserReader       = "mongo:user-reader"
 	//UserWriter       = "mongo:user-writer"
 
-	//MongoURL   = "localhost"
-	//MongoDB    = "wombat"
-	//SqliteFile = "./db.sqlite"
-
 	cfg map[string]interface{}
 )
 
-//func Load() {
 func init() {
+	p, c, err := getConfig()
+	// if no config file was found, assume that `Load` will be manually invoked
+	if err != nil && p == "" {
+		return
+	}
+
+	// load the configuration
+	var j interface{}
+	if err := json.Unmarshal(c, &j); err != nil {
+		log.Fatalf("Failed to read configuration file: %s, from: %s\n%v", ConfigFile, p, err)
+	}
+
+	cfg = j.(map[string]interface{})
+	setFromCfg()
+}
+
+func Load() {
 	// get|read configuration from file
 	p, c, err := getConfig()
 	if err != nil {

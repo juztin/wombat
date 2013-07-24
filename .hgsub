@@ -1,1 +1,2 @@
-apps/articles = ../wombat-articles
+#apps/articles = ../wombat-articles
+#apps/articles = apps/articles
