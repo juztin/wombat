@@ -35,7 +35,11 @@ func init() {
 	if config.Load() == nil {
 		setFromCfg()
 	}
-}
+
+	var j interface{}
+	if err := json.Unmarshal(c, &j); err != nil {
+		log.Fatalf("Failed to read configuration file: %s, from: %s\n%v", ConfigFile, p, err)
+	}
 
 func Load() {
 	if config.Load() == nil {
