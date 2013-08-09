@@ -3,7 +3,6 @@ package config
 import "bitbucket.org/juztin/config"
 
 var (
-	//ConfigFile       = "config.json"
 	IsProd           = false
 	Cookie           = "oatmeal"
 	CookieExpires    = true
@@ -26,18 +25,9 @@ var (
 	TmplEditErr      = false
 	TmplPath         = "./templates"
 	UserReader       = "mongo:user-reader"
-	//UserWriter       = "mongo:user-writer"
-
-	//cfg map[string]interface{}
 )
 
 func init() {
-	if config.Load() == nil {
-		setFromCfg()
-	}
-}
-
-func Load() {
 	if config.Load() == nil {
 		setFromCfg()
 	}
@@ -75,8 +65,4 @@ func setFromCfg() {
 
 	// database
 	config.SetCfgGroupString("user", "reader", &UserReader)
-	//setCfgGroupString("user", "writer", &UserWriter)
-	//setCfgGroupString("db", "mongoURL", &MongoURL)
-	//setCfgGroupString("db", "mongoDB", &MongoDB)
-	//setCfgGroupString("db", "sqliteFile", &SqliteFile)
 }
