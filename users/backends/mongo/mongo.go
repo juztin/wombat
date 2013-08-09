@@ -8,8 +8,8 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 
+	"bitbucket.org/juztin/config"
 	"bitbucket.org/juztin/wombat/backends"
-	"bitbucket.org/juztin/wombat/config"
 	"bitbucket.org/juztin/wombat/users"
 )
 
