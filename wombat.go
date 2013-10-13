@@ -20,7 +20,7 @@ import (
 
 /*-----------------------------------Fields------------------------------------*/
 const (
-	VERSION  string = "0.2.4"
+	VERSION  string = "0.2.5"
 	ERR_TMPL string = "/errors/"
 )
 
@@ -28,8 +28,6 @@ var (
 	Wrap  Wrapper = wrap
 	Users users.Users
 )
-
-//var httpCodes = []int64{401, 404, 500, 501}
 
 type Server struct {
 	*dingo.Server

@@ -3,7 +3,6 @@
 go build ../wombat \
 	../wombat/backends \
 	../wombat/config \
-	../wombat/imgconv \
 	../wombat/template \
 	../wombat/template/data \
 	../wombat/users \
