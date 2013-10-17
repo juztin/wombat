@@ -103,11 +103,11 @@ func NewAnonymous() User {
 func (m Model) CheckPassword(p string) bool {
 	p1, p2 := []byte(m.Password()), []byte(p)
 	if err := bcrypt.CompareHashAndPassword(p1, p2); err != nil {
-		log.Printf("Failed to compare password hashes: ", err)
+		log.Printf("Failed to compare password hashes: %v", err)
 		return false
 	} else {
 		if err = m.UpdateLastSignin(m.Username(), time.Now()); err != nil {
-			log.Println("Failed to update 'lastSignin' time ", err)
+			log.Printf("Failed to update 'lastSignin' time %v", err)
 		}
 	}
 	return true

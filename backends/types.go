@@ -40,8 +40,6 @@ func (b *err) Critical() bool {
 }
 
 func NewError(s Status, f string, params ...interface{}) Error {
-	p := []interface{}{s}
-	p = append(p, params...)
-	msg := fmt.Sprintf("[backend, %v] "+f, p...)
+	msg := fmt.Sprintf("[backend, %v] %s %v", s, f, params)
 	return &err{s, msg}
 }
