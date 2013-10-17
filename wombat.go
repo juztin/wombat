@@ -12,6 +12,7 @@ import (
 	//"sort"
 
 	"bitbucket.org/juztin/dingo"
+	"bitbucket.org/juztin/dingo/request"
 	"bitbucket.org/juztin/dingo/views"
 
 	"bitbucket.org/juztin/wombat/config"
@@ -159,13 +160,15 @@ func Error(ctx dingo.Context, status int) bool {
 	r := ctx.Response
 	r.WriteHeader(status)
 
-	// write matching error template
-	n := fmt.Sprintf("%s%d.html", ERR_TMPL, status)
-	if v := views.Get(n); v != nil {
-		v.Execute(ctx, nil)
-	} else {
-		m := []byte(http.StatusText(status))
-		r.Write(m)
+	if request.IsTextHTML(ctx.Request) {
+		// write matching error template
+		n := fmt.Sprintf("%s%d.html", ERR_TMPL, status)
+		if v := views.Get(n); v != nil {
+			v.Execute(ctx, nil)
+		} else {
+			m := []byte(http.StatusText(status))
+			r.Write(m)
+		}
 	}
 	return true
 }
