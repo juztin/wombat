@@ -37,36 +37,52 @@ func init() {
 	}
 }
 
+func setBool(group, key string, b *bool) {
+	if v, ok := config.GroupBool(group, key); ok {
+		*b = v
+	}
+}
+func setInt(group, key string, i *int) {
+	if v, ok := config.GroupInt(group, key); ok {
+		*i = v
+	}
+}
+func setString(group, key string, s *string) {
+	if v, ok := config.GroupString(group, key); ok {
+		*s = v
+	}
+}
+
 func setFromCfg() {
 	// server
-	config.SetCfgGroupBool("server", "isProd", &IsProd)
-	config.SetCfgGroupString("server", "host", &ServerHost)
-	config.SetCfgGroupInt("server", "port", &ServerPort)
-	config.SetCfgGroupString("server", "domain", &ServerDomain)
-	config.SetCfgGroupString("server", "signinUrl", &SigninURL)
-	config.SetCfgGroupBool("server", "unixSock", &UnixSock)
-	config.SetCfgGroupString("server", "unixSockFile", &UnixSockFile)
-	config.SetCfgGroupBool("server", "tls", &TLS)
-	config.SetCfgGroupString("server", "tlsCert", &TLSCert)
-	config.SetCfgGroupString("server", "tlsKey", &TLSKey)
+	setBool("server", "isProd", &IsProd)
+	setString("server", "host", &ServerHost)
+	setInt("server", "port", &ServerPort)
+	setString("server", "domain", &ServerDomain)
+	setString("server", "signinURL", &SigninURL)
+	setBool("server", "unixSock", &UnixSock)
+	setString("server", "unixSockFile", &UnixSockFile)
+	setBool("server", "tls", &TLS)
+	setString("server", "tlsCert", &TLSCert)
+	setString("server", "tlsKey", &TLSKey)
 
 	// cookie
-	config.SetCfgGroupString("cookie", "name", &Cookie)
-	config.SetCfgGroupBool("cookie", "expires", &CookieExpires)
-	config.SetCfgGroupString("cookie", "expireHash", &CookieExpireHash)
-	config.SetCfgGroupInt("cookie", "expireTime", &CookieExpireTime)
-	config.SetCfgGroupString("cookie", "path", &CookiePath)
-	config.SetCfgGroupBool("cookie", "httpOnly", &CookieHttpOnly)
-	config.SetCfgGroupBool("cookie", "secure", &CookieSecure)
+	setString("cookie", "name", &Cookie)
+	setBool("cookie", "expires", &CookieExpires)
+	setString("cookie", "expireHash", &CookieExpireHash)
+	setInt("cookie", "expireTime", &CookieExpireTime)
+	setString("cookie", "path", &CookiePath)
+	setBool("cookie", "httpOnly", &CookieHttpOnly)
+	setBool("cookie", "secure", &CookieSecure)
 
 	// media
-	config.SetCfgGroupString("media", "url", &MediaURL)
+	setString("media", "url", &MediaURL)
 
 	// templates
-	config.SetCfgGroupString("templates", "editRoute", &TmplEditRt)
-	config.SetCfgGroupBool("templates", "editErr", &TmplEditErr)
-	config.SetCfgGroupString("templates", "path", &TmplPath)
+	setString("templates", "editRoute", &TmplEditRt)
+	setBool("templates", "TmplEditErr", &TmplEditErr)
+	setString("templates", "TmplPath", &TmplPath)
 
 	// database
-	config.SetCfgGroupString("user", "reader", &UserReader)
+	setString("user", "reader", &UserReader)
 }
