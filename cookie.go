@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/juztin/wombat/config"
+	"minty.io/wombat/config"
 )
 
 // taken from https://groups.google.com/forum/?fromgroups=#!msg/golang-nuts/owCogizIuZs/ZzmwkQGrlnEJ

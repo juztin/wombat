@@ -5,9 +5,9 @@
 package data
 
 import (
-	"bitbucket.org/juztin/wombat"
-	"bitbucket.org/juztin/wombat/config"
-	"bitbucket.org/juztin/wombat/users"
+	"minty.io/wombat"
+	"minty.io/wombat/config"
+	"minty.io/wombat/users"
 )
 
 type Data struct {

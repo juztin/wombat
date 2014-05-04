@@ -4,7 +4,7 @@
 
 package config
 
-import "bitbucket.org/juztin/config"
+import "minty.io/config"
 
 var (
 	IsProd           = false

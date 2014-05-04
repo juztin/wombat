@@ -11,8 +11,8 @@ import (
 
 	"code.google.com/p/go.crypto/bcrypt"
 
-	"bitbucket.org/juztin/wombat/backends"
-	"bitbucket.org/juztin/wombat/config"
+	"minty.io/wombat/backends"
+	"minty.io/wombat/config"
 )
 
 type Data struct {

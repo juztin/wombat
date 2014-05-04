@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitbucket.org/juztin/dingo/views"
-	"bitbucket.org/juztin/wombat"
-	"bitbucket.org/juztin/wombat/config"
-	"bitbucket.org/juztin/wombat/template/data"
+	"minty.io/dingo/views"
+	"minty.io/wombat"
+	"minty.io/wombat/config"
+	"minty.io/wombat/template/data"
 )
 
 func RequireAdmin(h wombat.Handler) wombat.Handler {

@@ -1,11 +1,11 @@
 #!/bin/sh -
 
-go install bitbucket.org/juztin/wombat
-go install bitbucket.org/juztin/wombat/backends
-go install bitbucket.org/juztin/wombat/config
-go install bitbucket.org/juztin/wombat/template
-go install bitbucket.org/juztin/wombat/template/data
-go install bitbucket.org/juztin/wombat/users
-go install bitbucket.org/juztin/wombat/users/backends
-go install bitbucket.org/juztin/wombat/users/backends/mongo
-go install bitbucket.org/juztin/wombat/wraps
+go install minty.io/wombat
+go install minty.io/wombat/backends
+go install minty.io/wombat/config
+go install minty.io/wombat/template
+go install minty.io/wombat/template/data
+go install minty.io/wombat/users
+go install minty.io/wombat/users/backends
+go install minty.io/wombat/users/backends/mongo
+go install minty.io/wombat/wraps

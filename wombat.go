@@ -15,12 +15,12 @@ import (
 	"strconv"
 	//"sort"
 
-	"bitbucket.org/juztin/dingo"
-	"bitbucket.org/juztin/dingo/request"
-	"bitbucket.org/juztin/dingo/views"
+	"minty.io/dingo"
+	"minty.io/dingo/request"
+	"minty.io/dingo/views"
 
-	"bitbucket.org/juztin/wombat/config"
-	"bitbucket.org/juztin/wombat/users"
+	"minty.io/wombat/config"
+	"minty.io/wombat/users"
 )
 
 /*-----------------------------------Fields------------------------------------*/

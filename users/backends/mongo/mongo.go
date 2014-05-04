@@ -12,9 +12,9 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 
-	"bitbucket.org/juztin/config"
-	"bitbucket.org/juztin/wombat/backends"
-	"bitbucket.org/juztin/wombat/users"
+	"minty.io/config"
+	"minty.io/wombat/backends"
+	"minty.io/wombat/users"
 )
 
 const COL_NAME = "users"

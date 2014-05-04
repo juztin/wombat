@@ -6,9 +6,9 @@
 package main
 
 import (
-	"bitbucket.org/juztin/wombat"
+	"minty.io/wombat"
 
-	_ "bitbucket.org/juztin/wombat/users/backends/mongo"
+	_ "minty.io/wombat/users/backends/mongo"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"regexp"
 
-	"bitbucket.org/juztin/dingo"
+	"minty.io/dingo"
 )
 
 type rRoute struct {
