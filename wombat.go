@@ -58,7 +58,7 @@ func dingoHandler() (net.Listener, error) {
 	} else if config.TLS {
 		return dingo.TLSListener(config.ServerHost, config.ServerPort, config.TLSCert, config.TLSKey)
 	}
-	return dingo.HttpListener(config.ServerHost, config.ServerPort)
+	return dingo.HTTPListener(config.ServerHost, config.ServerPort)
 }
 
 func canEdit(ctx dingo.Context) bool {
@@ -118,12 +118,12 @@ func getUser(ctx dingo.Context) users.User {
 
 func getExpireUser(ctx dingo.Context) users.User {
 	if cookie, key, ok := UpdatedExpireCookie(ctx.Request); ok {
-		http.SetCookie(ctx.Response, cookie)
 		if u, err := Users.BySession(key); err == nil {
+			http.SetCookie(ctx.Response, cookie)
 			return u
 		}
-	} else if cookie != nil {
-		http.SetCookie(ctx.Response, cookie)
+		/*} else if cookie != nil {
+		http.SetCookie(ctx.Response, cookie)*/
 	}
 	return users.NewAnonymous()
 }
