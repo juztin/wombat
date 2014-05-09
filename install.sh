@@ -1,11 +1,11 @@
 #!/bin/sh -
 
-go install minty.io/wombat
-go install minty.io/wombat/backends
-go install minty.io/wombat/config
-go install minty.io/wombat/template
-go install minty.io/wombat/template/data
-go install minty.io/wombat/users
-go install minty.io/wombat/users/backends
-go install minty.io/wombat/users/backends/mongo
-go install minty.io/wombat/wraps
+go install code.minty.io/wombat
+go install code.minty.io/wombat/backends
+go install code.minty.io/wombat/config
+go install code.minty.io/wombat/template
+go install code.minty.io/wombat/template/data
+go install code.minty.io/wombat/users
+go install code.minty.io/wombat/users/backends
+go install code.minty.io/wombat/users/backends/mongo
+go install code.minty.io/wombat/wraps

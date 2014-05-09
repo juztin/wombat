@@ -5,9 +5,9 @@
 package data
 
 import (
-	"minty.io/wombat"
-	"minty.io/wombat/config"
-	"minty.io/wombat/users"
+	"code.minty.io/wombat"
+	"code.minty.io/wombat/config"
+	"code.minty.io/wombat/users"
 )
 
 type Data struct {

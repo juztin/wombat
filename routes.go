@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"regexp"
 
-	"minty.io/dingo"
+	"code.minty.io/dingo"
 )
 
 type rRoute struct {

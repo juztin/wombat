@@ -6,9 +6,9 @@
 package main
 
 import (
-	"minty.io/wombat"
+	"code.minty.io/wombat"
 
-	_ "minty.io/wombat/users/backends/mongo"
+	_ "code.minty.io/wombat/users/backends/mongo"
 )
 
 func main() {

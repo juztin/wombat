@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"minty.io/wombat/config"
+	"code.minty.io/wombat/config"
 )
 
 // taken from https://groups.google.com/forum/?fromgroups=#!msg/golang-nuts/owCogizIuZs/ZzmwkQGrlnEJ

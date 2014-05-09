@@ -4,7 +4,7 @@
 
 package config
 
-import "minty.io/config"
+import "code.minty.io/config"
 
 var (
 	IsProd           = false

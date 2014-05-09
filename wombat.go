@@ -15,12 +15,12 @@ import (
 	"strconv"
 	//"sort"
 
-	"minty.io/dingo"
-	"minty.io/dingo/request"
-	"minty.io/dingo/views"
+	"code.minty.io/dingo"
+	"code.minty.io/dingo/request"
+	"code.minty.io/dingo/views"
 
-	"minty.io/wombat/config"
-	"minty.io/wombat/users"
+	"code.minty.io/wombat/config"
+	"code.minty.io/wombat/users"
 )
 
 /*-----------------------------------Fields------------------------------------*/
