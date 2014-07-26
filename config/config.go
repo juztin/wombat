@@ -32,9 +32,9 @@ var (
 )
 
 func init() {
-	if config.Load() == nil {
-		setFromCfg()
-	}
+	//if config.Load() == nil {
+	setFromCfg()
+	//}
 }
 
 func setBool(group, key string, b *bool) {
