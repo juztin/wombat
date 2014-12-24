@@ -9,10 +9,9 @@ import (
 	"log"
 	"time"
 
-	"code.google.com/p/go.crypto/bcrypt"
-
 	"code.minty.io/wombat/backends"
 	"code.minty.io/wombat/config"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Data struct {
